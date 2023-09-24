@@ -1,10 +1,17 @@
+import random
 import config
 import discord
 import spacy
 from discord.ext import commands
 
 TOKEN = config.DISCORD_TOKEN
-bot = commands.Bot(command_prefix='!')
+
+intents = discord.Intents.default()
+intents.messages = True
+intents.guilds = True
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -33,8 +40,22 @@ async def joke(ctx, *, sentence: str = None):
         await ctx.send("Couldn't find enough verbs or nouns in the sentence!")
         return
 
+    # Randomly choose a verb and noun
+    chosen_verb = random.choice(verbs)
+    chosen_noun = random.choice(nouns)
+    
+    # If there's more than one verb, pick another one that isn't the chosen_verb for the punchline
+    if len(verbs) > 1:
+        second_verb = random.choice([v for v in verbs if v != chosen_verb])
+    else:
+        second_verb = chosen_verb
+
     # Create the joke
-    joke_msg = f"She {verbs[0]} on my {nouns[0]} until I {verbs[-1] if len(verbs) > 1 else verbs[0]}"
+    if chosen_verb.endswith('ing'):
+        joke_msg = f"She is {chosen_verb} on my {chosen_noun} until I {second_verb}"
+    else:
+        joke_msg = f"She {chosen_verb} on my {chosen_noun} until I {second_verb}"
+    
     await ctx.send(joke_msg)
 
 bot.run(TOKEN)
