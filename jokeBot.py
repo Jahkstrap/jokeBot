@@ -53,14 +53,14 @@ async def joke(ctx, *, sentence: str = None):
     # Create the joke
     if first_verb.endswith('ing'):
         if second_verb.endswith('ing'):
-            joke_msg = f"She is {first_verb} on my {chosen_noun} until I'm {second_verb}"
+            joke_msg = f"She is {first_verb} on my {chosen_noun} 'til I'm {second_verb}"
         else:
-            joke_msg = f"She is {first_verb} on my {chosen_noun} until I {second_verb}"
+            joke_msg = f"She is {first_verb} on my {chosen_noun} 'til I {second_verb}"
     else:
         if second_verb.endswith('ing'):
-            joke_msg = f"She {first_verb} on my {chosen_noun} until I'm {second_verb}"
+            joke_msg = f"She {first_verb} on my {chosen_noun} 'til I'm {second_verb}"
         else:
-            joke_msg = f"She {first_verb} on my {chosen_noun} until I {second_verb}"
+            joke_msg = f"She {first_verb} on my {chosen_noun} 'til I {second_verb}"
     
     await ctx.send(joke_msg)
 
