@@ -41,21 +41,46 @@ async def joke(ctx, *, sentence: str = None):
         return
 
     # Randomly choose a verb and noun
-    chosen_verb = random.choice(verbs)
+    first_verb = random.choice(verbs)
     chosen_noun = random.choice(nouns)
     
-    # If there's more than one verb, pick another one that isn't the chosen_verb for the punchline
+    # If there's more than one verb, pick another one that isn't the first_verb for the punchline
     if len(verbs) > 1:
-        second_verb = random.choice([v for v in verbs if v != chosen_verb])
+        second_verb = random.choice([v for v in verbs if v != first_verb])
     else:
-        second_verb = chosen_verb
+        second_verb = first_verb
 
     # Create the joke
-    if chosen_verb.endswith('ing'):
-        joke_msg = f"She is {chosen_verb} on my {chosen_noun} until I {second_verb}"
+    if first_verb.endswith('ing'):
+        if second_verb.endswith('ing'):
+            joke_msg = f"She is {first_verb} on my {chosen_noun} until I'm {second_verb}"
+        else:
+            joke_msg = f"She is {first_verb} on my {chosen_noun} until I {second_verb}"
     else:
-        joke_msg = f"She {chosen_verb} on my {chosen_noun} until I {second_verb}"
+        if second_verb.endswith('ing'):
+            joke_msg = f"She {first_verb} on my {chosen_noun} until I'm {second_verb}"
+        else:
+            joke_msg = f"She {first_verb} on my {chosen_noun} until I {second_verb}"
     
     await ctx.send(joke_msg)
+
+@bot.command()
+async def parts(ctx, *, sentence: str = None):
+    # If the command is replying to a message, use the content of the replied message as input
+    if ctx.message.reference:
+        replied_message = await ctx.fetch_message(ctx.message.reference.message_id)
+        sentence = replied_message.content
+    
+    if not sentence:
+        await ctx.send("Please provide a sentence or reply to a message!")
+        return
+
+    doc = nlp(sentence)
+
+    # Find verbs and nouns from the sentence
+    verbs = [token.text for token in doc if token.pos_ == "VERB"]
+    nouns = [token.text for token in doc if token.pos_ == "NOUN"]
+
+    await ctx.send(f"Nouns: {', '.join(nouns)}\nVerbs: {', '.join(verbs)}")
 
 bot.run(TOKEN)
