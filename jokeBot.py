@@ -29,8 +29,11 @@ async def joke(ctx, *, sentence: str = None):
     if not sentence:
         await ctx.send("Please provide a sentence or reply to a message!")
         return
+    
+    # Strip the '!joke' prefix if present in the sentence
+    cleanedInput = sentence.replace('!joke', '').strip()
 
-    doc = nlp(sentence)
+    doc = nlp(cleanedInput)
 
     # Find verbs and nouns from the sentence
     verbs = [token.text for token in doc if token.pos_ == "VERB"]
